@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React-hooks</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"
+        integrity="sha512-kp7YHLxuJDJcOzStgd6vtpxr4ZU9kjn77e6dBsivSz+pUuAuMlE2UTdKB7jjsWT84qbS8kdCWHPETnP/ctrFsA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const randomNumber = () => Math.ceil(Math.random() * 9);
+
+        const Gugudan = () => {
+            // state 관리
+            const [first, setFirst] = React.useState(randomNumber());
+            const [second, setSecond] = React.useState(randomNumber());
+            const [value, setValue] = React.useState('');
+            const [result, setResult] = React.useState('');
+
+            // DOM에 접근
+            const inputRef = React.useRef();
+
+            const onChange = (e) => {
+                setValue((value) => e.target.value);
+            };
+            const onSubmit = (e) => {
+                // 기본 이벤트를 막음(form 보내는것을 막음)
+                e.preventDefault();
+                const pass = first * second;
+
+                setResult(result => pass === parseInt(value) ? `${value} 정답.` : `땡. 정답은 ${pass}`);
+                setFirst(first => randomNumber());
+                setSecond(second => randomNumber());
+                setValue(value => '');
+                // DOM접근시 current 프로퍼티 사용
+                inputRef.current.focus();
+            };
+
+            return (
+                <React.Fragment>
+                    <h2>{first} 곱하기 {second} 는?</h2>
+                    <form onSubmit={onSubmit}>
+                        {/* JSX에서 태그 내 속성 class: className, for: htmlFor 로 사용해야 함(자바스크립트 예약어) */}
+                        <input type="number" value={value} onChange={onChange} ref={inputRef} />
+                        <button type="submit">제출</button>
+                    </form>
+                    <p>{result}</p>
+                </React.Fragment>
+            )
+        }
+
+        // Hooks가 등장하기 전에는 상태관리가 필요 없을때만 사용함(간결하고, 편하기 때문)
+        const App = () => {
+            return <div><Gugudan /></div>
+        };
+    </script>
+    <script type="text/babel">
+        ReactDOM.render(<App />, document.querySelector('#root'));
+    </script>
+</body>
+
+</html>
